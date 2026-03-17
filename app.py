@@ -229,3 +229,15 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
+"""
+1 Load financial dataset
+2 EDA
+3 Linear regression stock prediction
+4 Residual analysis (QQ plot)
+5 Logistic regression classifier
+6 Feature engineering
+7 Standard scaling
+8 Classification report
+9 ROC-AUC
+10 Precision-Recall curve
+"""
