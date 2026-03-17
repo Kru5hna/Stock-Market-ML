@@ -110,3 +110,122 @@ res = pd.DataFrame({
 
 print(res)
 
+df['Target'] = df['Next_close'] > df['Close'].astype(int)
+
+df['Target'].value_counts()
+
+X = df[['Prev Close','Open','High','Low','Volume','VWAP']]
+y = df['Target']
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Create a pipeline that scales the data then fits the model
+model = make_pipeline(StandardScaler(), LogisticRegression(class_weight='balanced', max_iter=1000))
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+y_prob = model.predict_proba(X_test)[:,1]
+
+y_prob
+
+from sklearn.metrics import accuracy_score
+acc = accuracy_score(y_test, y_pred)
+print("accuracy", acc)
+
+from sklearn.metrics import confusion_matrix, classification_report
+print(classification_report(y_test, y_pred))
+
+# Feature Engineering: Adding Returns and Moving Average
+df['Daily_Return'] = df.groupby('Symbol')['Close'].pct_change()
+df['MA5'] = df.groupby('Symbol').rolling(window=5)['Close'].mean().reset_index(0, drop=True)
+df = df.dropna()
+
+# Updating features and splitting data
+X = df[['Daily_Return', 'MA5', 'Volume', 'VWAP']]
+y = df['Target']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Re-fitting the pipeline model
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+
+from sklearn.metrics import classification_report
+print(classification_report(y_test, y_pred))
+
+# test/random
+from sklearn.metrics import roc_curve, roc_auc_score
+import matplotlib.pyplot as plt
+
+y_true = [1,1,0,0,1,0]
+y_scores = [0.9,0.8,0.7,0.4,0.35,0.2]
+
+fpr, tpr, th = roc_curve(y_true, y_scores)
+auc = roc_auc_score(y_true, y_scores)
+
+plt.plot(fpr, tpr, label=f'AUC = {auc: .2f}')
+plt.plot([0,1],[0,1], linestyle='--')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC Curve')
+
+y_prob = model.predict_proba(X_test)[:,1]
+
+auc = roc_auc_score(y_test, y_prob)
+print(auc)
+
+from sklearn.metrics import roc_curve
+import matplotlib.pyplot as plt
+
+fpr, tpr, thresholds = roc_curve(y_test, y_prob)
+
+plt.plot(fpr, tpr)
+plt.plot([0,1],[0,1],'--')
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.title("ROC Curve")
+plt.show()
+
+# Caliberation and Regularization intuition
+th = 0.7
+y_pred_custom = (y_prob > th).astype(int)
+print(classification_report(y_test, y_pred_custom))
+
+
+
+from sklearn.metrics import precision_recall_curve, average_precision_score
+import matplotlib.pyplot as plt
+
+# Calculate precision-recall curve
+precision, recall, _ = precision_recall_curve(y_test, y_prob)
+aps = average_precision_score(y_test, y_prob)
+
+plt.figure(figsize=(8, 6))
+plt.step(recall, precision, where='post', label=f'Average Precision = {aps:.2f}')
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+plt.title('Precision-Recall Curve')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+from sklearn.calibration import calibration_curve
+
+# Reliability Diagram (Calibration Curve)
+prob_true, prob_pred = calibration_curve(y_test, y_prob, n_bins=10)
+
+plt.figure(figsize=(8, 6))
+plt.plot(prob_pred, prob_true, marker='o', label='Logistic Regression')
+plt.plot([0, 1], [0, 1], linestyle='--', label='Perfectly Calibrated')
+plt.xlabel('Mean Predicted Probability')
+plt.ylabel('Fraction of Positives')
+plt.title('Calibration Curve (Reliability Diagram)')
+plt.legend()
+plt.grid(True)
+plt.show()
+
