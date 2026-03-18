@@ -18,7 +18,7 @@ from sklearn.metrics import r2_score, mean_squared_error
 
 import statsmodels.api as sm
 
-df = pd.read_csv('data/NIFTY50_all.csv')
+df = pd.read_csv('NIFTY50_all.csv')
 # df = pd.read_csv('data/COALINDIA.csv')
 df.head()
 
@@ -229,15 +229,16 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
-"""
-1 Load financial dataset
-2 EDA
-3 Linear regression stock prediction
-4 Residual analysis (QQ plot)
-5 Logistic regression classifier
-6 Feature engineering
-7 Standard scaling
-8 Classification report
-9 ROC-AUC
-10 Precision-Recall curve
-"""
+"""# Decision Tree"""
+
+from sklearn.tree import DecisionTreeClassifier
+model = DecisionTreeClassifier(max_depth=3)
+model.fit(X_train, y_train)
+
+from sklearn.tree import plot_tree
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(12,8))
+plot_tree(model, feature_names= X.columns, class_names=['Up', 'Down'], filled=True)
+plt.show()
+
