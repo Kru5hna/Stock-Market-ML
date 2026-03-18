@@ -26,7 +26,7 @@ def train_logistic_model(X_train, X_test, y_train, y_test):
     print(classification_report(y_test, preds))
 
     print("ROC AUC:", roc_auc_score(y_test, probs))
-    plot_roc(y_test, preds, "logistics")
+    # plot_roc(y_test, preds, "logistics")
 
     return model
 
@@ -40,7 +40,7 @@ def train_decision_tree(X_train, X_test, y_train, y_test):
     preds = model.predict(X_test)
 
     print(classification_report(y_test, preds))
-    plot_roc(y_test, preds, "decision_tree")
-    save_tree(model, X_train.columns, "decision_tree")
+    # plot_roc(y_test, preds, "decision_tree")
+    # save_tree(model, X_train.columns, "decision_tree")
 
     return model

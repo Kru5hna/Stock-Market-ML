@@ -4,7 +4,20 @@ from src.classification_model import train_logistic_model, train_decision_tree
 from src.regression_models import train_regression_models
 from src.features import create_regression_features, create_classification_features
 
-from sklearn.model_selection import train_test_split
+def chronological_split(X, y, test_size=0.2):
+    X_sorted = X.sort_values('Date')
+    y_sorted = y.loc[X_sorted.index]
+    
+    X_features = X_sorted.drop(columns=['Date'])
+    
+    split_idx = int(len(X_features) * (1 - test_size))
+    
+    X_train = X_features.iloc[:split_idx]
+    X_test = X_features.iloc[split_idx:]
+    y_train = y_sorted.iloc[:split_idx]
+    y_test = y_sorted.iloc[split_idx:]
+    
+    return X_train, X_test, y_train, y_test
 
 def main():
    print("Starting Pipeline...")
@@ -12,7 +25,7 @@ def main():
    df = load_data()
     # regression
    X, y = create_regression_features(df)
-   X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+   X_train, X_test, y_train, y_test = chronological_split(X, y, test_size=0.2)
 
    res = train_regression_models(X_train, X_test, y_train, y_test)
    print("Regression Results: ")
@@ -21,9 +34,7 @@ def main():
    # classification
    X, y = create_classification_features(df)
 
-   X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
-    )
+   X_train, X_test, y_train, y_test = chronological_split(X, y, test_size=0.2)
 
    print("\nLogistic Regression")
    train_logistic_model(X_train, X_test, y_train, y_test)
