@@ -1,0 +1,556 @@
+ 
+MONTH 2 DEEP DIVE 
+Classical ML Through Failure Modes 
+6 Topics  ·  4 Weeks  ·  All Free Resources  ·  FinTech-First Projects 
+M2 W1 M2 W2 M2 W3 M2 W4 
+Linear + Logistic 
+Regression 
+Decision Trees + 
+Random Forests 
+Gradient Boosting 
+(XGBoost/LightGBM/CatBoost) 
+Unsupervised 
+Learning + 
+Evaluation 
+Stock price direction 
+predictor + failure docs 
+Feature importance on 
+financial data + 
+visualization 
+XGBoost beats random forest + 
+experiment log 
+Customer 
+segmentation + full eval 
+pipeline 
+ 
+THE MONTH 2 PRINCIPLE: Your college covered theory. Every topic this month is 
+approached through its failure modes — the gap between knowing an algorithm works and 
+knowing WHEN it breaks. Every week ends with something deployed. No notebooks that only 
+run on localhost. 
+  WEEK 1 — Linear Models 
+2 Topics  ·  ~10-12 hours  ·  FinTech angle: Stock price direction prediction 
+ 
+#7 Linear Regression — The Compression Anchor M2 W1 
+⚡  LAW 1 
+PREDICTION BEFORE 
+EXPLANATION 
+Your Prediction: Linear regression fits a line through data. It fails when data 
+is non-linear. 
+The Correction: Linear regression is the MASTER KEY to understanding all 
+of ML. The math (OLS, cost function, gradient descent) appears in every 
+model you'll ever use. Master its failure modes deeply — multicollinearity, 
+heteroscedasticity, violated normality — and you'll diagnose problems in 
+random forests, neural nets, everything. It's not 'just regression'; it's the 
+foundation. 
+🔴 LAW 2 
+FAILURE MODES 
+OVER FEATURES 
+Why invented: Legendre/Gauss (1800s) for astronomical orbit prediction. Pain: 
+fitting curves to observed planetary positions. The same algebra runs inside 
+modern deep learning optimizers. 
+Silent assumptions: Linear relationship between inputs and output • Features 
+are independent (no multicollinearity) • Constant variance in residuals 
+(homoscedasticity) • Residuals are normally distributed • No influential outliers 
+How it fails silently: Multicollinearity silently inflates standard errors — your 
+coefficients are meaningless but R² looks fine • Heteroscedasticity: variance 
+grows with prediction size — classic in financial data • Outliers that look normal in 
+X but are extreme in Y destroy your fit • Spurious correlations: adding correlated 
+features improves R² but hurts generalization 
+What replaces it: Non-linear patterns → polynomial features, tree models • 
+Outliers → Huber/RANSAC regression • Multicollinearity → Ridge/Lasso 
+regularization • Non-normal errors → quantile regression 
+🔴 LAW 3 — COMPRESSION BEATS COVERAGE 
+Deeply master: OLS derivation, Ridge/Lasso 
+regularization, residual analysis. These 3 appear 
+everywhere — in gradient boosting loss functions, 
+neural net weight decay, and production 
+debugging. Once you understand why Ridge 
+shrinks coefficients, L2 regularization in PyTorch is 
+obvious. 
+🔴 LAW 4 — EMOTION CREATES JUDGMENT 
+Take NSE/BSE daily stock data (free on Kaggle). 
+Fit linear regression to predict next-day close. 
+Document every violated assumption with plots 
+(residual plots, QQ plots). Post: 'I tried to predict 
+stocks with linear regression. Here are 4 ways it 
+lied to me — with actual plots.' 
+🔴 FINTECH ANGLE 
+Financial data almost always 
+violates homoscedasticity — 
+returns have volatility clustering. 
+Use this as your first real-world 
+ML failure mode. Also: predict 
+stock direction (up/down) → 
+segue into Logistic Regression. 
+🔴 DEPLOY IT 
+GitHub notebook: Stock return 
+regression with full assumption-
+checking pipeline. Plot residuals, 
+QQ plot, Cook's distance for 
+outliers. Regularization 
+comparison (OLS vs Ridge vs 
+Lasso). README explains what 
+broke and why. 
+🔴 LINKEDIN POST ANGLE 
+"Linear regression lies to you in 4 
+ways — and most tutorials never 
+show you" 
+FREE 
+RESOURCES 
+Scikit-learn LinearRegression + Ridge/Lasso docs • StatQuest: 'Linear Regression' 
+playlist (YouTube) • NSE historical data: Kaggle datasets • Sebastian Raschka Chapter 
+3 (free GitHub) 
+ #8 Logistic Regression — Classification 
+Foundation 
+M2 W1 
+⚡  LAW 1 
+PREDICTION BEFORE 
+EXPLANATION 
+Your Prediction: Logistic regression classifies by drawing a linear decision 
+boundary. It fails with non-linear problems. 
+The Correction: Logistic regression is the GATEWAY to understanding 
+classification, probabilities, and what 'a model predicts' actually means. The 
+sigmoid function → cross-entropy loss → gradient descent is the exact same 
+pattern inside every neural network. Master calibration (does 70% confidence 
+actually mean 70% correct?) — this matters enormously in FinTech where 
+over-confident models cause bad trades. 
+🔴 LAW 2 
+FAILURE MODES 
+OVER FEATURES 
+Why invented: Bernoulli/Cox (1944) for dose-response curves in medicine. Pain: 
+predicting binary outcomes (survive/die, buy/not buy) from continuous inputs. 
+Same math runs in the output layer of neural nets. 
+Silent assumptions: Linear decision boundary sufficient • Features independent 
+• No multicollinearity • Sufficient sample size per class • No extreme class 
+imbalance 
+How it fails silently: Perfect separation (boundary too clean → unstable 
+coefficients) • Class imbalance: 99% negatives → model says 'always negative,' 
+looks accurate • Uncalibrated probabilities: 0.8 confidence doesn't mean 80% 
+correct • Feature correlation inflates coefficients silently • Threshold of 0.5 is 
+rarely optimal 
+What replaces it: Non-linear → kernel SVM, tree models, NN • Imbalance → 
+SMOTE, class weights, threshold tuning • Calibration → Platt scaling, isotonic 
+regression • Multi-class beyond binary → softmax regression 
+🔴 LAW 3 — COMPRESSION BEATS COVERAGE 
+Deeply understand: sigmoid derivation, cross-
+entropy loss, class weights, threshold selection. 
+The threshold selection insight (precision-recall 
+trade-off) is one of the most practically important 
+things in ML — FinTech fraud models are all about 
+this trade-off. 
+🔴 LAW 4 — EMOTION CREATES JUDGMENT 
+Predict stock price direction UP/DOWN (binary 
+classification) using previous 5-day features. 
+Critically: tune the classification threshold using 
+precision-recall curve, not just accuracy. Post: 'Why 
+accuracy is a terrible metric for imbalanced 
+financial data — with code' 
+🔴 FINTECH ANGLE 
+Stock direction prediction is 
+inherently imbalanced (random 
+walk). Use 
+class_weight='balanced' in 
+sklearn. This is identical to fraud 
+detection — your target market 
+FinTechs fight this exact 
+problem. 
+🔴 DEPLOY IT 
+Jupyter notebook: Stock direction 
+classifier with threshold tuning. 
+Show: naive model (accuracy 
+85%, precision 20%) vs 
+threshold-tuned model. Plot PR 
+curve and ROC curve. Explain in 
+plain English why AUC matters 
+more than accuracy. 
+🔴 LINKEDIN POST ANGLE 
+"Why accuracy is a lie for 
+imbalanced financial data" 
+FREE 
+RESOURCES 
+Scikit-learn LogisticRegression docs • StatQuest 'Logistic Regression' series (YouTube, 
+free) • Kaggle: Titanic as warm-up, then any binary financial dataset • imbalanced-learn 
+library (free) 
+ 
+  WEEK 2 — Tree-Based Models 
+2 Topics  ·  ~12-14 hours  ·  FinTech angle: Feature importance in financial data 
+ 
+#9 Decision Trees — The Interpretable Baseline M2 W2 
+⚡  LAW 1 
+PREDICTION BEFORE 
+EXPLANATION 
+Your Prediction: Decision trees split data with yes/no questions. They fail by 
+memorizing the training data. 
+The Correction: Decision trees are the INTERPRETABILITY FOUNDATION 
+of all of ML. Every explanation technique (SHAP, feature importance) builds 
+on tree logic. More importantly: trees reveal what a model actually learned — 
+and in FinTech, you must be able to explain WHY a model made a decision 
+(regulatory requirement). Understanding how trees overfit (depth=unlimited) 
+vs underfit (depth=1) teaches you the entire bias-variance trade-off in one 
+concept. 
+🔴 LAW 2 
+FAILURE MODES 
+OVER FEATURES 
+Why invented: Breiman et al. 1984 (CART). Pain: medical diagnosis needed 
+interpretable decisions — doctors needed to understand WHY, not just WHAT. 
+Same need in FinTech: regulators require explainable credit decisions. 
+Silent assumptions: Features are informative for the split • Splits are axis-
+aligned (rectangular boundaries only) • Enough samples per leaf for stable 
+estimates • Training distribution matches deployment 
+How it fails silently: Overfitting by memorizing: depth 20 tree has 100% training 
+accuracy, terrible test accuracy • Instability: small data change → completely 
+different tree structure • Greedy splitting misses globally optimal splits • 
+Categorical high-cardinality features create bias (target encoding data leak) • 
+Unequal class sizes bias splits toward majority 
+What replaces it: Overfitting → pruning, max_depth constraint, 
+min_samples_leaf • Instability → Random Forests (average many trees) • Non-
+axis-aligned → oblique trees (rare), or switch to gradient boosting • 
+Interpretability at scale → SHAP values instead of tree visualization 
+🔴 LAW 3 — COMPRESSION BEATS COVERAGE 
+Master: Gini impurity vs entropy derivation 
+(understand WHY, not just WHAT), pruning, feature 
+importance calculation. The feature importance 
+insight carries directly into random forests, gradient 
+boosting, and SHAP values — master it once, 
+apply everywhere. 
+🔴 LAW 4 — EMOTION CREATES JUDGMENT 
+Train a decision tree on financial data. Deliberately 
+overfit (depth=None). Then constrain depth and 
+show improvement. Generate a full tree 
+visualization. Post: 'I visualized what a decision tree 
+actually learns about stock patterns — it's both 
+impressive and terrifying' 
+🔴 FINTECH ANGLE 
+Credit risk scoring has historically 
+used decision trees for regulatory 
+compliance. Your tree must be 
+explainable — what features 
+drive approval? In India: CIBIL 
+score, income, EMI ratio are 
+standard features. Build a toy 
+credit model to understand the 
+domain. 
+🔴 DEPLOY IT 
+GitHub notebook: Full tree on 
+financial data — overfit tree vs 
+pruned tree comparison, feature 
+importance bar chart, dtreeviz 
+visualization. README must 
+include: 'Here's what the tree 
+learned and where it went wrong.' 
+This is pure LinkedIn content. 
+🔴 LINKEDIN POST ANGLE 
+"I visualized what a decision tree 
+learned about stocks — the result 
+was both impressive and 
+terrifying" 
+FREE 
+RESOURCES 
+Scikit-learn DecisionTreeClassifier/Regressor docs • StatQuest 'Decision Trees' 
+(YouTube) • dtreeviz library (free, beautiful tree visualizations) • Kaggle: any 
+classification dataset for practice 
+ #10 Random Forests — Ensemble Power M2 W2 
+⚡  LAW 1 
+PREDICTION BEFORE 
+EXPLANATION 
+Your Prediction: Random forests are many decision trees voting together. 
+They're always better than one tree. 
+The Correction: Random forests teach you ENSEMBLE THINKING — 
+combining weak learners into strong predictions. The key insight: error from 
+individual trees is mostly uncorrelated, so averaging cancels it out. Feature 
+subsampling is the crucial trick. Understanding this deeply prepares you for 
+gradient boosting, dropout in neural nets, and any ensemble method. Also: 
+out-of-bag (OOB) error is a free validation set — production shortcut you'll 
+use constantly. 
+🔴 LAW 2 
+FAILURE MODES 
+OVER FEATURES 
+Why invented: Breiman 2001. Pain: single decision trees were too unstable for 
+production — one new sample changed everything. Solution: grow many diverse 
+trees, average them. Diversity (via feature subsampling) is the whole trick. 
+Silent assumptions: Trees are independent (they're not — they share training 
+data) • Feature subsampling sufficient for diversity • More trees always better 
+(returns diminish, cost increases) • Features are equally informative • Training 
+distribution stable 
+How it fails silently: Correlated features split across multiple trees, making 
+importance misleading • Memory scaling: 100 trees × 10MB each = 1GB model • 
+Slow prediction in latency-sensitive systems • Feature importance biased toward 
+high-cardinality features • OOB estimate can be optimistic with correlated 
+features 
+What replaces it: Memory → fewer trees, feature selection first • Speed → 
+ExtraTrees (faster, slightly less accurate) • Importance bias → permutation 
+importance instead of impurity-based • Very large datasets → LightGBM (10x 
+faster)  • Interpretability → SHAP TreeExplainer 
+🔴 LAW 3 — COMPRESSION BEATS COVERAGE 
+Master: feature importance (impurity vs 
+permutation), OOB error, hyperparameter 
+sensitivity (n_estimators, max_features, 
+max_depth). Permutation importance vs impurity 
+importance is a critical distinction — impurity 
+importance is biased, permutation is robust. Use 
+this in your FinTech project. 
+🔴 LAW 4 — EMOTION CREATES JUDGMENT 
+Compare: single decision tree vs random forest on 
+the same financial dataset. Show OOB error as free 
+validation. Run permutation importance vs impurity 
+importance — show where they disagree. Post: 
+'Random Forest feature importance lied to me. 
+Here's the correct way to measure it.' 
+🔴 FINTECH ANGLE 
+FinTech uses random forests for 
+fraud detection (Stripe, 
+Razorpay) and credit scoring. 
+Your app: given transaction 
+features (amount, time, merchant 
+type, location), which features 
+most predict fraud? Real Kaggle 
+fraud detection dataset is free to 
+use. 
+🔴 DEPLOY IT 
+GitHub notebook: side-by-side 
+decision tree vs random forest 
+performance, OOB error curve vs 
+validation error, permutation 
+importance comparison. 
+Deployed as a Streamlit app (free 
+on Streamlit Cloud) that lets you 
+upload CSV and get feature 
+importance. This is a portfolio-
+worthy project. 
+🔴 LINKEDIN POST ANGLE 
+"Random Forest feature 
+importance lied to me — here's 
+the correct way to measure it" 
+FREE 
+RESOURCES 
+Scikit-learn RandomForestClassifier docs • StatQuest 'Random Forests' (YouTube) • 
+eli5 library for permutation importance (free) • Kaggle Learn: Intermediate ML (covers 
+random forests with exercises) 
+ 
+  WEEK 3 — Gradient Boosting 
+1 Topic  ·  ~12-15 hours  ·  This is the most important week for tabular/FinTech ML 
+ 
+#11 Gradient Boosting — XGBoost / LightGBM / 
+CatBoost 
+M2 W3 
+⚡  LAW 1 
+PREDICTION BEFORE 
+EXPLANATION 
+Your Prediction: Gradient boosting builds trees sequentially where each 
+tree fixes the previous one's errors. It's the best algorithm for tabular data. 
+The Correction: Gradient boosting is THE algorithm for tabular/structured 
+data — the kind that dominates FinTech. XGBoost/LightGBM win 80% of 
+Kaggle tabular competitions. The key insight: 'boosting' means fitting to 
+residuals (errors) sequentially. Gradient descent in function space. Master 
+the hyperparameter grid (learning_rate vs n_estimators trade-off, subsample, 
+colsample_bytree) and you can tune any gradient boosting model quickly. 
+This DIRECTLY applies to fraud detection, credit risk, churn prediction. 
+🔴 LAW 2 
+FAILURE MODES 
+OVER FEATURES 
+Why invented: Friedman 1999 (gradient boosting). XGBoost: Chen & Guestrin 
+2016 (won 17 Kaggle competitions in 2015). Pain: random forests couldn't be 
+further improved after a certain point. Sequential correction of residuals was the 
+breakthrough. 
+Silent assumptions: Learning rate × n_estimators trade-off balanced • No 
+extreme outliers in target • Features scaled appropriately (for some variants) • No 
+catastrophic feature interactions missed by trees • Enough data for complex 
+interactions 
+How it fails silently: Overfitting with too many trees + high learning rate (looks 
+good on train, bad on test) • Slow training vs LightGBM if using XGBoost on large 
+data • CatBoost handles categoricals differently — silent bugs if using label 
+encoding instead • Hyperparameter sensitivity: wrong combo collapses 
+performance • Feature leakage: boosting amplifies small data leaks into huge 
+overfit 
+What replaces it: Overfit → early stopping + validation set • Speed → LightGBM 
+(10-20x faster than XGBoost on large data) • Categoricals → CatBoost or explicit 
+encoding • Complex interactions → more depth, more trees • Interpretability → 
+SHAP values (TreeExplainer is optimized for boosting) 
+🔴 LAW 3 — COMPRESSION BEATS COVERAGE 
+Deeply master: early stopping (most critical trick), 
+learning rate vs n_estimators trade-off, SHAP for 
+gradient boosting. One key compression: lower 
+learning_rate + more n_estimators = better 
+generalization, always. Early stopping automates 
+finding the right n_estimators. Internalize this, never 
+manually tune n_estimators again. 
+🔴 LAW 4 — EMOTION CREATES JUDGMENT 
+Take your Month 2 W1 stock direction dataset. 
+Replace logistic regression with XGBoost. Use 
+early stopping. Log experiment parameters (MLflow 
+or even a simple CSV). Show XGBoost beats 
+logistic regression AND random forest. Post: 
+'XGBoost vs Random Forest on real financial data 
+— the numbers, not the theory' 
+🔴 FINTECH ANGLE 
+Gradient boosting is the 
+STANDARD in FinTech for 
+anything tabular: fraud detection 
+(label: fraudulent yes/no), credit 
+scoring (label: default yes/no), 
+churn prediction, transaction 
+categorization. Learning this well 
+is your most direct path to 
+FinTech ML roles. 
+🔴 DEPLOY IT 
+GitHub notebook: 3-way 
+comparison (logistic regression 
+vs random forest vs XGBoost) on 
+the same financial dataset. Early 
+stopping curve showing optimal 
+n_estimators. SHAP waterfall plot 
+showing why ONE specific 
+prediction was made. This is the 
+most impressive single notebook 
+you can have at this stage. 
+🔴 LINKEDIN POST ANGLE 
+"XGBoost vs Random Forest on 
+real financial data — the 
+numbers not the theory" FREE 
+RESOURCES 
+XGBoost official docs (best ML docs after sklearn) • LightGBM docs • StatQuest 
+'Gradient Boost' series (YouTube) • Kaggle Learn: XGBoost micro-course (free, hands-
+on) • SHAP library docs (free) 
+ 
+  WEEK 4 — Unsupervised Learning + Evaluation 
+1 Topic  ·  ~10-12 hours  ·  Build complete evaluation pipeline for all Month 2 projects 
+ 
+#12 Unsupervised Learning — Clustering, PCA, 
+Anomaly Detection 
+M2 W4 
+⚡  LAW 1 
+PREDICTION BEFORE 
+EXPLANATION 
+Your Prediction: K-Means clusters similar data points together. PCA 
+reduces dimensions. They fail when data doesn't have clear clusters. 
+The Correction: Unsupervised learning is the FOUNDATION of anomaly 
+detection — your FinTech superpower. No labeled fraud data? Unsupervised 
+detects anomalies by finding outliers. Also: PCA is a compression technique 
+— understanding it deeply helps you understand embeddings (Month 4), 
+attention in Transformers, and every dimensionality reduction you'll 
+encounter. Cluster analysis = customer segmentation, which is direct 
+business value. 
+🔴 LAW 2 
+FAILURE MODES 
+OVER FEATURES 
+Why invented: K-Means: Lloyd 1957. PCA: Pearson 1901, Hotelling 1933. 
+Anomaly detection: formalized in data mining 1990s. Pain: no labels available in 
+most real-world data. Discovering structure without supervision. 
+Silent assumptions: K-Means: data is spherical and clusters are equal-sized • 
+PCA: linear relationships capture variance • Anomaly detection: normal behavior 
+is separable from anomalous • DBSCAN: meaningful density in the feature space 
+How it fails silently: K-Means: k=3 when data has 5 clusters — you'd never 
+know • Choosing wrong k silently gives misleading segments • PCA directions 
+not aligned with meaningful features • Anomaly detection in high dimensions: 
+everything looks anomalous (curse of dimensionality) • Scaling matters 
+enormously — unscaled features dominate K-Means 
+What replaces it: Non-spherical clusters → DBSCAN or Hierarchical clustering • 
+High-dimensional → UMAP/t-SNE for visualization first, then cluster • Anomaly in 
+production → Isolation Forest, One-Class SVM, Autoencoders • PCA limitations 
+→ kernel PCA, UMAP for non-linear 
+🔴 LAW 3 — COMPRESSION BEATS COVERAGE 
+Master: elbow method + silhouette score for 
+choosing k, PCA explained variance ratio, Isolation 
+Forest for anomaly detection. Compression insight: 
+PCA = find directions of maximum variance = same 
+intuition as attention in Transformers. Deep 
+understanding of PCA carries you far. 
+🔴 LAW 4 — EMOTION CREATES JUDGMENT 
+Customer/user segmentation on financial 
+transaction data. Cluster by: spending category, 
+amount, frequency. Name each segment ('high-
+frequency small spends', 'monthly big purchases'). 
+Add Isolation Forest for anomaly detection. Post: 
+'How I segmented 10,000 customers with K-Means 
+— and what the anomaly detector found' 
+🔴 FINTECH ANGLE 
+Transaction anomaly detection is 
+direct FinTech value. Isolation 
+Forest flags unusual transactions 
+without labels. In Welth context: 
+flag your own unusual spending 
+automatically. This bridges the 
+gap between Month 2 (classical 
+ML) and Month 4 (RAG + LLM 
+explanations of anomalies). 
+🔴 DEPLOY IT 
+Streamlit app: upload transaction 
+CSV → automatically clusters 
+users into segments → flags 
+anomalies → shows PCA 
+visualization. Deploy on Streamlit 
+Cloud (free). This is a 
+COMPLETE, shareable product. 
+Add link to LinkedIn post. 
+🔴 LINKEDIN POST ANGLE 
+"How K-Means found 5 customer 
+segments in my financial data — 
+and what the anomaly cluster 
+revealed" 
+FREE 
+RESOURCES 
+Scikit-learn clustering docs • StatQuest PCA series (YouTube, best explanation online) • 
+Kaggle: Credit card clustering dataset • Isolation Forest docs (scikit-learn) • UMAP docs 
++ tutorials (free)  
+  BONUS — The Evaluation Bible for Month 2  
+Every project this month needs a proper evaluation pipeline. Here's exactly what to include for each metric 
+and when to use it. 
+ 
+Metric When to use (FinTech context) How it fails silently 
+Accuracy Balanced classes only. Useless for 
+fraud (99.9% not-fraud). 
+Says '99% accurate' — model 
+predicts every transaction as legit. 
+You'd never catch fraud. 
+Precision Minimize false positives. Fraud alert 
+fatigue — too many wrong alerts. 
+Miss real fraud while looking precise. 
+Bank loses money. 
+Recall (Sensitivity) Minimize false negatives. Missing 
+real fraud is catastrophic. 
+Catch all fraud but alert on everything 
+— unusable in production. 
+F1 Score Balance precision and recall. Good 
+default for imbalanced classification. 
+Equal weight to precision/recall — 
+often you want to prioritize one. 
+AUC-ROC Compare models regardless of 
+threshold. Standard for binary 
+FinTech tasks. 
+High AUC but poor calibration — the 
+model's probabilities are unreliable. 
+PR Curve Imbalanced datasets where positive 
+class is rare (fraud, default). 
+Optimistic PR curve from test set 
+leak. Always separate eval set. 
+Silhouette Score Choosing k in K-Means. Measures 
+cluster quality. 
+High silhouette but meaningless 
+business segments. Always visual-
+inspect clusters. 
+RMSE / MAE Regression tasks (stock price 
+prediction). MAE robust to outliers. 
+RMSE dominated by 1-2 outlier 
+predictions. Always check both. 
+ 
+Month 2 Capstone: The FinTech ML Benchmark 
+End of Month 2 goal: one notebook that runs ALL four algorithms on the same financial dataset with full 
+evaluation. This becomes a cornerstone portfolio piece. 
+ 
+FinTech Credit Risk Benchmark Notebook 
+Dataset: Home Credit Default Risk (Kaggle, free) — 300K rows, 120 features, real credit application 
+data 
+Models to compare: Logistic Regression → Decision Tree → Random Forest → XGBoost → 
+LightGBM 
+Metrics: AUC-ROC, F1 at optimal threshold, Precision-Recall curve, training time, inference time 
+Explainability: SHAP values for your best model — which 5 features most impact credit decisions? 
+Deployed as: Streamlit app — input applicant features, get probability of default + explanation 
+LinkedIn post: 'I built a credit risk model from scratch. 5 algorithms, 300K rows, SHAP explanations. 
+Full breakdown thread 🧵' 
+ The Month 2 Promise to Yourself 
+By end of Month 2, you will have: 4 deployed projects, 4 LinkedIn posts, 1 capstone 
+benchmark notebook, and a deep intuition for WHY classical ML fails — not just how to run it. 
+When a FinTech interviewer asks 'what's the difference between random forest and gradient 
+boosting?' — you won't recite definitions. You'll explain it through a real failure you 
+encountered on real financial data. 
+ 
